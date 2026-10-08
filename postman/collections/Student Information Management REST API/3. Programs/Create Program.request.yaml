@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/programs"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "code": "BSAI",
+      "name": "Bachelor of Science in Artificial Intelligence",
+      "description": "Autonomous systems, deep learning, NLP and computer vision.",
+      "status": "ACTIVE"
+    }
+order: 3000

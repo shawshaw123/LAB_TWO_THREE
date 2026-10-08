@@ -1,0 +1,12 @@
+{
+  "name": "sims-frontend-client",
+  "version": "1.0.0",
+  "description": "Student Information Management System - Decoupled Frontend Client for Laboratory Activity III",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run-tests.mjs"
+  },
+  "keywords": ["laravel", "rest-api", "frontend", "spa", "sims"],
+  "author": "",
+  "license": "MIT"
+}

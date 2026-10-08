@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/students"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "student_number": "2026-95555",
+      "first_name": "Emilio",
+      "middle_name": "Famy",
+      "last_name": "Aguinaldo",
+      "birth_date": "2004-03-22",
+      "email": "emilio.aguinaldo@example.com",
+      "contact_number": "+63 917 888 9999",
+      "address": "Kawit, Cavite, Philippines",
+      "program_id": 1,
+      "year_level": 2,
+      "status": "ACTIVE"
+    }
+order: 3000

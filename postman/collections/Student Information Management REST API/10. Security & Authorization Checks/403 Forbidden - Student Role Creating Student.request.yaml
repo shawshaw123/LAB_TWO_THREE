@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/students"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{studentToken}}
+body:
+  type: json
+  content: |-
+    {
+      "student_number": "2026-99999",
+      "first_name": "Hacked",
+      "last_name": "Student",
+      "birth_date": "2004-01-01",
+      "email": "hack@example.com",
+      "program_id": 1,
+      "year_level": 1
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Returns 403 Forbidden for unauthorized role', function () {
+          pm.response.to.have.status(403);
+      });
+    language: text/javascript
+order: 3000

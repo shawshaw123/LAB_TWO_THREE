@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "admin@example.com",
+      "password": "Password123!"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code is 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      var jsonData = pm.response.json();
+      if (jsonData.data && jsonData.data.token) {
+          pm.collectionVariables.set('token', jsonData.data.token);
+          pm.collectionVariables.set('adminToken', jsonData.data.token);
+      }
+    language: text/javascript
+order: 2000

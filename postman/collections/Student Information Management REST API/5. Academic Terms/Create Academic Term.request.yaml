@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/academic-terms"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "academic_year": "2027-2028",
+      "term": "1st Semester",
+      "start_date": "2027-08-16",
+      "end_date": "2027-12-18",
+      "status": "ACTIVE"
+    }
+order: 3000

@@ -1,0 +1,13 @@
+$kind: collection
+description: Comprehensive Postman collection for the Student Information Management REST API covering all domain modules, role-based workflows, automated status assertions, and the 20 Mandatory Acceptance Demonstration tasks from Laboratory Activity I & II.
+variables:
+  baseUrl: http://127.0.0.1:8000/api/v1
+  token: ""
+  adminToken: ""
+  registrarToken: ""
+  instructorToken: ""
+  instructor2Token: ""
+  studentToken: ""
+  newOfferingId: ""
+  newEnrollmentId: ""
+  newGradeId: ""

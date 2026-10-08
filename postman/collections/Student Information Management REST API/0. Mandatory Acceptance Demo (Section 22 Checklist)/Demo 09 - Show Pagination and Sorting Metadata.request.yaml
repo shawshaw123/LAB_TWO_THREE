@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/students?page=2&per_page=10&sort=last_name&order=asc"
+method: GET
+headers:
+  Accept: application/json
+  Authorization: Bearer {{adminToken}}
+queryParams:
+  page: "2"
+  per_page: "10"
+  sort: last_name
+  order: asc
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Response includes pagination metadata', function () {
+          pm.response.to.have.status(200);
+          var json = pm.response.json();
+          pm.expect(json.meta).to.have.property('current_page');
+          pm.expect(json.meta).to.have.property('per_page');
+          pm.expect(json.meta).to.have.property('total');
+      });
+    language: text/javascript
+order: 10000

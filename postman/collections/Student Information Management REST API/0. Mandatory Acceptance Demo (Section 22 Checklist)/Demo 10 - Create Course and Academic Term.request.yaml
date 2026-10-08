@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{baseUrl}}/courses"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "course_code": "DS201",
+      "course_title": "Predictive Analytics",
+      "units": 3.0,
+      "description": "Techniques for predictive modeling, time series, and decision trees.",
+      "status": "ACTIVE"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Course created or exists', function () {
+          pm.expect(pm.response.code).to.be.oneOf([201, 422]);
+      });
+    language: text/javascript
+order: 11000

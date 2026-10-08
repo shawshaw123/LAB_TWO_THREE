@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{baseUrl}}/students/105"
+method: DELETE
+headers:
+  Accept: application/json
+  Authorization: Bearer {{adminToken}}
+order: 5000

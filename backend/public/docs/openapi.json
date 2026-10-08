@@ -1,0 +1,487 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Student Information Management REST API",
+    "version": "1.0.0",
+    "description": "Backend Application Development for Information Technology - REST API supporting Student Records, Academic Programs, Courses, Terms, Course Offerings, Enrollments, Grades, and Academic Records.",
+    "contact": {
+      "name": "Backend Development Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Sanctum Token",
+        "description": "Enter personal access token obtained from /api/v1/auth/login"
+      }
+    },
+    "schemas": {
+      "StandardSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Operation completed successfully." },
+          "data": { "type": "object" },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "current_page": { "type": "integer", "example": 1 },
+              "per_page": { "type": "integer", "example": 20 },
+              "total": { "type": "integer", "example": 105 },
+              "last_page": { "type": "integer", "example": 6 }
+            }
+          }
+        }
+      },
+      "StandardErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "Validation failed." },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "example": { "email": ["A valid email address is required."] }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "System Administrator" },
+          "email": { "type": "string", "example": "admin@example.com" },
+          "role": { "type": "string", "enum": ["admin", "registrar", "instructor", "student"], "example": "admin" },
+          "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"], "example": "ACTIVE" }
+        }
+      },
+      "Student": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "student_number": { "type": "string", "example": "2026-00001" },
+          "first_name": { "type": "string", "example": "John" },
+          "middle_name": { "type": "string", "example": "Fitzgerald" },
+          "last_name": { "type": "string", "example": "Doe" },
+          "suffix": { "type": "string", "nullable": true, "example": null },
+          "full_name": { "type": "string", "example": "John Fitzgerald Doe" },
+          "birth_date": { "type": "string", "format": "date", "example": "2004-05-14" },
+          "email": { "type": "string", "format": "email", "example": "student@example.com" },
+          "contact_number": { "type": "string", "example": "+63 912 345 6789" },
+          "address": { "type": "string", "example": "123 Academic Way, Metro Manila, Philippines" },
+          "program_id": { "type": "integer", "example": 1 },
+          "year_level": { "type": "integer", "example": 3 },
+          "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE", "GRADUATED", "DROPPED"], "example": "ACTIVE" }
+        }
+      },
+      "Program": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "code": { "type": "string", "example": "BSIT" },
+          "name": { "type": "string", "example": "Bachelor of Science in Information Technology" },
+          "description": { "type": "string", "example": "Focuses on software engineering and database administration." },
+          "status": { "type": "string", "example": "ACTIVE" }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "course_code": { "type": "string", "example": "IT101" },
+          "course_title": { "type": "string", "example": "Introduction to Computing" },
+          "description": { "type": "string", "example": "Foundations of computer systems." },
+          "units": { "type": "number", "example": 3.0 },
+          "status": { "type": "string", "example": "ACTIVE" }
+        }
+      },
+      "AcademicTerm": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "academic_year": { "type": "string", "example": "2025-2026" },
+          "term": { "type": "string", "example": "1st Semester" },
+          "start_date": { "type": "string", "format": "date", "example": "2025-08-15" },
+          "end_date": { "type": "string", "format": "date", "example": "2025-12-20" },
+          "status": { "type": "string", "example": "ACTIVE" }
+        }
+      },
+      "CourseOffering": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "course_id": { "type": "integer", "example": 1 },
+          "academic_term_id": { "type": "integer", "example": 1 },
+          "instructor_id": { "type": "integer", "example": 3 },
+          "section": { "type": "string", "example": "IT101-A" },
+          "schedule": { "type": "string", "example": "MWF 08:00-09:30" },
+          "room": { "type": "string", "example": "Lab 301" },
+          "capacity": { "type": "integer", "example": 45 },
+          "status": { "type": "string", "example": "OPEN" }
+        }
+      },
+      "Enrollment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "student_id": { "type": "integer", "example": 1 },
+          "course_offering_id": { "type": "integer", "example": 1 },
+          "enrollment_date": { "type": "string", "format": "date", "example": "2025-08-20" },
+          "status": { "type": "string", "example": "COMPLETED" }
+        }
+      },
+      "Grade": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "enrollment_id": { "type": "integer", "example": 1 },
+          "midterm_grade": { "type": "number", "example": 1.25 },
+          "final_grade": { "type": "number", "example": 1.50 },
+          "remarks": { "type": "string", "enum": ["PASSED", "FAILED", "INCOMPLETE", "DROPPED"], "example": "PASSED" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "User Login",
+        "description": "Authenticate using email and password to receive a Sanctum Bearer token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "admin@example.com" },
+                  "password": { "type": "string", "example": "Password123!" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated successfully",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StandardSuccessResponse" } } }
+          },
+          "422": {
+            "description": "Invalid credentials or validation error",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StandardErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Student Account Registration",
+        "description": "Self-register a new student account and receive a Sanctum Bearer token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password", "program_id"],
+                "properties": {
+                  "name": { "type": "string", "example": "Juan Luna" },
+                  "email": { "type": "string", "format": "email", "example": "juan.luna@example.com" },
+                  "password": { "type": "string", "example": "Password123!" },
+                  "student_number": { "type": "string", "example": "2026-99002" },
+                  "program_id": { "type": "integer", "example": 1 },
+                  "year_level": { "type": "integer", "example": 1 },
+                  "birth_date": { "type": "string", "format": "date", "example": "2005-04-12" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student account registered successfully",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StandardSuccessResponse" } } }
+          },
+          "422": {
+            "description": "Validation error (duplicate email or invalid input)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StandardErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "User Logout",
+        "description": "Invalidate the current authenticated Sanctum access token.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Logged out successfully" },
+          "401": { "description": "Unauthenticated" }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get Current Authenticated User",
+        "description": "Retrieve current authenticated user profile and roles.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "User profile retrieved successfully" },
+          "401": { "description": "Unauthenticated" }
+        }
+      }
+    },
+    "/api/v1/students": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "List Students",
+        "description": "Retrieve paginated students with search, filters, and sorting.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "search", "in": "query", "description": "Search by name, student number, or email", "schema": { "type": "string" } },
+          { "name": "program_id", "in": "query", "schema": { "type": "integer" } },
+          { "name": "year_level", "in": "query", "schema": { "type": "integer" } },
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["id", "student_number", "first_name", "last_name", "year_level", "created_at"] } },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"] } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
+        ],
+        "responses": {
+          "200": { "description": "Students retrieved successfully" },
+          "403": { "description": "Forbidden for unauthorized roles" }
+        }
+      },
+      "post": {
+        "tags": ["Students"],
+        "summary": "Create Student",
+        "description": "Create a new student profile (Admin/Registrar only).",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["student_number", "first_name", "last_name", "birth_date", "email", "program_id", "year_level"],
+                "properties": {
+                  "student_number": { "type": "string", "example": "2026-99001" },
+                  "first_name": { "type": "string", "example": "Maria" },
+                  "middle_name": { "type": "string", "example": "Santos" },
+                  "last_name": { "type": "string", "example": "Reyes" },
+                  "suffix": { "type": "string", "nullable": true },
+                  "birth_date": { "type": "string", "format": "date", "example": "2005-03-21" },
+                  "email": { "type": "string", "format": "email", "example": "maria.reyes@example.com" },
+                  "contact_number": { "type": "string", "example": "+63 999 111 2222" },
+                  "address": { "type": "string", "example": "Quezon City, Philippines" },
+                  "program_id": { "type": "integer", "example": 1 },
+                  "year_level": { "type": "integer", "example": 1 },
+                  "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE", "GRADUATED", "DROPPED"], "default": "ACTIVE" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Student created successfully" },
+          "422": { "description": "Validation error" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/v1/students/{id}": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Retrieve Student by ID",
+        "description": "Retrieve student details. Object-level authorization enforced: students can only access their own profile.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Student retrieved" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Student not found" }
+        }
+      },
+      "put": {
+        "tags": ["Students"],
+        "summary": "Update Student",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Student updated successfully" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Student not found" },
+          "422": { "description": "Validation error" }
+        }
+      },
+      "delete": {
+        "tags": ["Students"],
+        "summary": "Delete Student",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Student deleted successfully" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Student not found" }
+        }
+      }
+    },
+    "/api/v1/students/{id}/enrollments": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Get Student Enrollments",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Enrollments retrieved successfully" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/v1/students/{id}/grades": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Get Student Grades",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Grades retrieved successfully" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/v1/students/{id}/academic-record": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Get Student Academic Record",
+        "description": "Retrieve student's complete academic record aggregated and grouped by academic term with GWA calculation.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Academic record retrieved successfully" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/v1/programs": {
+      "get": {
+        "tags": ["Programs"],
+        "summary": "List Programs",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "Programs list" } }
+      },
+      "post": {
+        "tags": ["Programs"],
+        "summary": "Create Program",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "201": { "description": "Program created" } }
+      }
+    },
+    "/api/v1/programs/{id}": {
+      "get": { "tags": ["Programs"], "summary": "Get Program by ID", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "put": { "tags": ["Programs"], "summary": "Update Program", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Programs"], "summary": "Delete Program", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/v1/courses": {
+      "get": { "tags": ["Courses"], "summary": "List Courses", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "post": { "tags": ["Courses"], "summary": "Create Course", "security": [{ "BearerAuth": [] }], "responses": { "201": { "description": "Success" } } }
+    },
+    "/api/v1/courses/{id}": {
+      "get": { "tags": ["Courses"], "summary": "Get Course by ID", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "put": { "tags": ["Courses"], "summary": "Update Course", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Courses"], "summary": "Delete Course", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/v1/academic-terms": {
+      "get": { "tags": ["Academic Terms"], "summary": "List Academic Terms", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "post": { "tags": ["Academic Terms"], "summary": "Create Academic Term", "security": [{ "BearerAuth": [] }], "responses": { "201": { "description": "Success" } } }
+    },
+    "/api/v1/academic-terms/{id}": {
+      "get": { "tags": ["Academic Terms"], "summary": "Get Academic Term by ID", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "put": { "tags": ["Academic Terms"], "summary": "Update Academic Term", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Academic Terms"], "summary": "Delete Academic Term", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/v1/course-offerings": {
+      "get": { "tags": ["Course Offerings"], "summary": "List Course Offerings", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "post": { "tags": ["Course Offerings"], "summary": "Create Course Offering", "security": [{ "BearerAuth": [] }], "responses": { "201": { "description": "Success" } } }
+    },
+    "/api/v1/course-offerings/{id}": {
+      "get": { "tags": ["Course Offerings"], "summary": "Get Course Offering by ID", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "put": { "tags": ["Course Offerings"], "summary": "Update Course Offering", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Course Offerings"], "summary": "Delete Course Offering", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/v1/course-offerings/{id}/students": {
+      "get": {
+        "tags": ["Course Offerings"],
+        "summary": "Get Students in Course Offering",
+        "description": "View class roster of enrolled students for this course offering (Instructors & Admin/Registrar).",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "Success" }, "403": { "description": "Forbidden" } }
+      }
+    },
+    "/api/v1/enrollments": {
+      "get": { "tags": ["Enrollments"], "summary": "List Enrollments", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "post": {
+        "tags": ["Enrollments"],
+        "summary": "Enroll Student into Course Offering",
+        "description": "Enroll a student into a course offering. Prevents duplicate enrollments (409 Conflict).",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "201": { "description": "Enrollment created successfully" },
+          "409": { "description": "Duplicate enrollment in the same course offering" },
+          "422": { "description": "Validation error or offering full" }
+        }
+      }
+    },
+    "/api/v1/enrollments/{id}": {
+      "get": { "tags": ["Enrollments"], "summary": "Get Enrollment by ID", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "patch": { "tags": ["Enrollments"], "summary": "Update Enrollment Status", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Enrollments"], "summary": "Delete Enrollment", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/v1/grades": {
+      "get": { "tags": ["Grades"], "summary": "List Grades", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "post": {
+        "tags": ["Grades"],
+        "summary": "Encode Student Grade",
+        "description": "Encode midterm and final grades for an enrolled student (Authorized instructor or Admin/Registrar).",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "201": { "description": "Grade created successfully" },
+          "403": { "description": "Forbidden (unauthorized instructor)" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/v1/grades/{id}": {
+      "get": { "tags": ["Grades"], "summary": "Get Grade by ID", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } },
+      "put": { "tags": ["Grades"], "summary": "Update Grade", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "Success" } } }
+    }
+  }
+}

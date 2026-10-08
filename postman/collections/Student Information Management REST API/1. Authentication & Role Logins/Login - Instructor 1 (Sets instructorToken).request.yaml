@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "instructor@example.com",
+      "password": "Password123!"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      var jsonData = pm.response.json();
+      if (jsonData.data && jsonData.data.token) {
+          pm.collectionVariables.set('token', jsonData.data.token);
+          pm.collectionVariables.set('instructorToken', jsonData.data.token);
+      }
+    language: text/javascript
+order: 3000

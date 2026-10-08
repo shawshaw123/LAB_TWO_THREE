@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{baseUrl}}/students/2/academic-record"
+method: GET
+headers:
+  Accept: application/json
+  Authorization: Bearer {{studentToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Object-level authorization prevents viewing peer record (403)', function () {
+          pm.response.to.have.status(403);
+      });
+    language: text/javascript
+order: 4000

@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{baseUrl}}/grades/1"
+method: PUT
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "midterm_grade": 1.25,
+      "final_grade": 1.25,
+      "remarks": "PASSED"
+    }
+order: 3000

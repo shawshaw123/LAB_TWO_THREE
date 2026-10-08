@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{baseUrl}}/students/1/enrollments"
+method: GET
+headers:
+  Accept: application/json
+  Authorization: Bearer {{adminToken}}
+order: 6000

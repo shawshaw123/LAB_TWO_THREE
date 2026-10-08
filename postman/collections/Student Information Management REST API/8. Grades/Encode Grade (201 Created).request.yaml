@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/grades"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "enrollment_id": 12,
+      "midterm_grade": 1.50,
+      "final_grade": 1.75,
+      "remarks": "PASSED"
+    }
+order: 2000

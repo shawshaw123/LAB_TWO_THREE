@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/students/1"
+method: PUT
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "contact_number": "+63 920 999 8888",
+      "year_level": 3
+    }
+order: 4000

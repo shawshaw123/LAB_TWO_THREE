@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/courses"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "course_code": "CYBER301",
+      "course_title": "Ethical Hacking and Defense",
+      "units": 3.0,
+      "description": "Network infiltration, vulnerability scanning, and proactive mitigation."
+    }
+order: 3000

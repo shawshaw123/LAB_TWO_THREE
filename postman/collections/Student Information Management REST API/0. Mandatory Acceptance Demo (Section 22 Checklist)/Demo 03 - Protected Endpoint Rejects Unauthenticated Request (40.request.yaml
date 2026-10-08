@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{baseUrl}}/students"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Returns 401 Unauthorized', function () {
+          pm.response.to.have.status(401);
+      });
+    language: text/javascript
+order: 4000

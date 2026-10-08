@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/students"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "student_number": "2026-00001",
+      "first_name": "Duplicate",
+      "last_name": "Record",
+      "birth_date": "2004-01-01",
+      "email": "duplicate.test@example.com",
+      "program_id": 1,
+      "year_level": 1
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Returns 422 Unprocessable Content for duplicate', function () {
+          pm.response.to.have.status(422);
+      });
+    language: text/javascript
+order: 7000

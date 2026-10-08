@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{baseUrl}}/programs/1"
+method: GET
+headers:
+  Accept: application/json
+  Authorization: Bearer {{adminToken}}
+order: 2000

@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/enrollments"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "student_id": 4,
+      "course_offering_id": 3,
+      "enrollment_date": "2026-01-22",
+      "status": "ENROLLED"
+    }
+order: 2000

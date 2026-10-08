@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/students/1/academic-record"
+method: GET
+headers:
+  Accept: application/json
+  Authorization: Bearer {{adminToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Returns aggregated academic record with GWA', function () {
+          pm.response.to.have.status(200);
+          var json = pm.response.json();
+          pm.expect(json.data).to.have.property('academic_terms');
+          pm.expect(json.data).to.have.property('summary');
+          pm.expect(json.data.summary).to.have.property('cumulative_gwa');
+      });
+    language: text/javascript
+order: 16000

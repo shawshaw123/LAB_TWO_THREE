@@ -1,0 +1,32 @@
+$kind: http-request
+url: "{{baseUrl}}/course-offerings"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "course_id": 1,
+      "academic_term_id": 1,
+      "instructor_id": 3,
+      "section": "IT101-SPECIAL",
+      "schedule": "MWF 10:00-11:00",
+      "room": "Computer Lab 1",
+      "capacity": 35,
+      "status": "OPEN"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code is 201', function () {
+          pm.response.to.have.status(201);
+      });
+      var jsonData = pm.response.json();
+      if (jsonData.data && jsonData.data.id) {
+          pm.collectionVariables.set('newOfferingId', jsonData.data.id);
+      }
+    language: text/javascript
+order: 12000

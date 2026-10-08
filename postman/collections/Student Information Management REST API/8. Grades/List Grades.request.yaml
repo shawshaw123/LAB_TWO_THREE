@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{baseUrl}}/grades"
+method: GET
+headers:
+  Accept: application/json
+  Authorization: Bearer {{adminToken}}
+order: 1000

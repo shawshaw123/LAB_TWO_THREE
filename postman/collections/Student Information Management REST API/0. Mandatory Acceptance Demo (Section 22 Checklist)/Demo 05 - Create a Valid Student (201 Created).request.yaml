@@ -1,0 +1,31 @@
+$kind: http-request
+url: "{{baseUrl}}/students"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "student_number": "2026-90001",
+      "first_name": "Mateo",
+      "middle_name": "Luna",
+      "last_name": "Mabini",
+      "birth_date": "2004-09-12",
+      "email": "mateo.mabini@example.com",
+      "contact_number": "+63 918 555 7777",
+      "address": "452 Mabini St, Ermita, Manila",
+      "program_id": 1,
+      "year_level": 2,
+      "status": "ACTIVE"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Student created with status 201', function () {
+          pm.response.to.have.status(201);
+      });
+    language: text/javascript
+order: 6000

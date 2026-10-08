@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{baseUrl}}/programs/1"
+method: PUT
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "description": "Updated description of curriculum and competencies."
+    }
+order: 4000

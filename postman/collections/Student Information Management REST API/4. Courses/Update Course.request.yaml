@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{baseUrl}}/courses/1"
+method: PUT
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "units": 4.0
+    }
+order: 4000

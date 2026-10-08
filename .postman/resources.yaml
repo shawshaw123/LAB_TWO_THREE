@@ -1,0 +1,17 @@
+# Use this workspace to collaborate
+workspace:
+  id: 5df7a93c-b995-4525-88d1-46bcee2221f2
+
+localResources:
+  collections:
+    - ../labTwoToThree.postman_collection.json
+    - ../backend/labTwoToThree.postman_collection.json
+    - ../backend/Student Information Management REST API
+  specs:
+    - ../backend/public/docs/openapi.json
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../backend/Student Information Management REST API: 712394c3-45cb-4da2-b43a-e0c5e8138949

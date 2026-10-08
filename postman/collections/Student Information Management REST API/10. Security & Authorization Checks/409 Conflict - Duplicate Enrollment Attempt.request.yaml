@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/enrollments"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{adminToken}}
+body:
+  type: json
+  content: |-
+    {
+      "student_id": 1,
+      "course_offering_id": 1
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Returns 409 Conflict for duplicate enrollment', function () {
+          pm.response.to.have.status(409);
+      });
+    language: text/javascript
+order: 6000

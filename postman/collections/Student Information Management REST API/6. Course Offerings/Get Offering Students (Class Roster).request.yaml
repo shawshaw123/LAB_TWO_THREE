@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{baseUrl}}/course-offerings/1/students"
+method: GET
+headers:
+  Accept: application/json
+  Authorization: Bearer {{adminToken}}
+order: 4000
